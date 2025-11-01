@@ -1,0 +1,47 @@
+[project]
+name = "tachi-rev2-portfolio"
+version = "0.1.0"
+description = "Multi-agent portfolio management system using Claude AI and CrewAI"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "crewai>=0.28.0",
+    "crewai-tools>=0.1.0",
+    "langchain-anthropic>=0.1.0",
+    "python-dotenv>=1.0.0",
+    "yfinance>=0.2.33",
+    "pandas>=2.1.4",
+    "numpy>=1.24.0",
+    "requests>=2.31.0",
+    "fastapi>=0.104.1",
+    "uvicorn>=0.24.0",
+    "pydantic>=2.0.0",
+    "rich>=13.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.black]
+line-length = 100
+target-version = ["py39"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
