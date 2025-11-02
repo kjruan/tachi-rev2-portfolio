@@ -59,6 +59,7 @@ class LLMFactory:
     def get_model_name(role: str) -> str:
         """
         Get model name for a specific role based on provider.
+        Returns model name with provider prefix for CrewAI/LiteLLM compatibility.
 
         Args:
             role: Agent role (strategist, analyst, fetcher)
@@ -68,13 +69,24 @@ class LLMFactory:
         # Check for role-specific override
         env_key = f"{role.upper()}_MODEL"
         if env_model := os.getenv(env_key):
-            return env_model
+            model = env_model
+        elif provider in LLMFactory.DEFAULT_MODELS:
+            # Get default for provider
+            model = LLMFactory.DEFAULT_MODELS[provider].get(role, "llama3.2:latest")
+        else:
+            model = "llama3.2:latest"
 
-        # Get default for provider
-        if provider in LLMFactory.DEFAULT_MODELS:
-            return LLMFactory.DEFAULT_MODELS[provider].get(role, "llama3.2:latest")
+        # Add provider prefix for LiteLLM/CrewAI compatibility
+        # This tells LiteLLM which provider to use
+        if provider == LLMProvider.OLLAMA and not model.startswith("ollama/"):
+            return f"ollama/{model}"
+        elif provider == LLMProvider.GROQ and not model.startswith("groq/"):
+            return f"groq/{model}"
+        elif provider == LLMProvider.OPENROUTER and not model.startswith("openrouter/"):
+            return f"openrouter/{model}"
+        # Claude models don't need prefix in LiteLLM
 
-        return "llama3.2:latest"
+        return model
 
     @staticmethod
     def create_llm(role: str = "analyst", temperature: float = 0.7, max_tokens: int = 4096):
